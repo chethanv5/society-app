@@ -3,7 +3,6 @@ package com.example.societyapp
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
@@ -13,13 +12,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun SignUpScreen(navController: NavController) {
     val authRepository = AuthRepository()
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     Column(modifier = Modifier.padding(16.dp)) {
@@ -34,12 +33,17 @@ fun SignUpScreen(navController: NavController) {
             label = { Text("Password") },
             visualTransformation = PasswordVisualTransformation()
         )
+        TextField(
+            value = name,
+            onValueChange = { name = it },
+            label = { Text("Name") }
+        )
         Button(onClick = {
-            authRepository.signUp(email, password) { isSuccess ->
+            authRepository.signUp(email, password, name) { isSuccess, errorMsg ->
                 if (isSuccess) {
                     navController.navigate("home")
                 } else {
-                    errorMessage = "Sign up failed"
+                    errorMessage = errorMsg ?: "Sign up failed. Please check your credentials or try again later."
                 }
             }
         }) {
@@ -50,4 +54,3 @@ fun SignUpScreen(navController: NavController) {
         }
     }
 }
-
